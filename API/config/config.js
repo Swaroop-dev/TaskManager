@@ -5,5 +5,6 @@ module.exports={
     database: process.env.DB_NAME,
     node_env:process.env.NODE_ENV,
     port:process.env.PORT,
-    jwtsecret:process.env.JWT_SECRET
+    jwtsecret:process.env.JWT_SECRET,
+    supaconnectionstring:process.env.SUPABASE_CONNECTION_STRING
 }

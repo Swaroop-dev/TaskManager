@@ -9,7 +9,6 @@ router.post('/register', authController.register);
 // Login user
 router.post('/login', authController.login);
 
-// Get user profile
-router.get('/me', auth, authController.getMe);
+
 
 module.exports = router;

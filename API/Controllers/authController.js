@@ -1,12 +1,11 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { pool } = require('../config/db');
+const { pool,query } = require('../config/db');
 const logger = require('../config/logger');
 const {jwtsecret}= require('../config/config');
 
 const JWT_SECRET = jwtsecret;
 
-// Register a new user
 exports.register = async (req, res) => {
   try {
     const { name, email, password, role = 'user' } = req.body;
@@ -16,7 +15,7 @@ exports.register = async (req, res) => {
     }
 
     // Check if user already exists
-    const [existingUsers] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    const [existingUsers] = await query('SELECT * FROM users WHERE email = $1', [email]);
     
     if (existingUsers.length > 0) {
       return res.status(400).json({ message: 'User already exists with this email' });
@@ -27,20 +26,21 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Insert user into database
-    const [result] = await pool.query(
-      'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
+    const [result] = await query(
+      'INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id',
       [name, email, hashedPassword, role]
     );
 
+    const userId = result[0].id;
     logger.info(`New user registered: ${email}`);
     
-    const token = jwt.sign({ id: result.insertId, role }, JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign({ id: userId, role }, JWT_SECRET, { expiresIn: '1d' });
 
     res.status(201).json({
       message: 'User registered successfully',
       token,
       user: {
-        id: result.insertId,
+        id: userId,
         name,
         email,
         role
@@ -62,7 +62,7 @@ exports.login = async (req, res) => {
     }
 
     // Check for user
-    const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    const [users] = await query('SELECT * FROM users WHERE email = $1', [email]);
     
     if (users.length === 0) {
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -94,22 +94,6 @@ exports.login = async (req, res) => {
   } catch (error) {
     logger.error('Login error:', error);
     res.status(500).json({ message: 'Server error during login' });
-  }
-};
-
-// Get current user profile
-exports.getMe = async (req, res) => {
-  try {
-    const [users] = await pool.query('SELECT id, name, email, role, created_at FROM users WHERE id = ?', [req.user.id]);
-    
-    if (users.length === 0) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    res.json({ user: users[0] });
-  } catch (error) {
-    logger.error('Get profile error:', error);
-    res.status(500).json({ message: 'Server error getting user profile' });
   }
 };
 

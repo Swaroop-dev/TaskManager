@@ -1,6 +1,5 @@
-const { pool } = require('../config/db');
+const { query } = require('../config/db');
 const logger = require('../config/logger');
-
 // Create a new task
 exports.createTask = async (req, res) => {
   try {
@@ -11,17 +10,18 @@ exports.createTask = async (req, res) => {
       return res.status(400).json({ message: 'Task title is required' });
     }
 
-    const [result] = await pool.query(
-      'INSERT INTO tasks (title, description, status, user_id) VALUES (?, ?, ?, ?)',
+    const [result] = await query(
+      'INSERT INTO tasks (title, description, status, user_id) VALUES ($1, $2, $3, $4) RETURNING id',
       [title, description, status, userId]
     );
 
+    const taskId = result[0].id;
     logger.info(`Task created by user ${userId}: ${title}`);
 
     res.status(201).json({
       message: 'Task created successfully',
       task: {
-        id: result.insertId,
+        id: taskId,
         title,
         description,
         status,
@@ -40,18 +40,18 @@ exports.getAllTasks = async (req, res) => {
     const userId = req.user.id;
     const userRole = req.user.role;
     
-    let query = 'SELECT * FROM tasks';
+    let queryText = 'SELECT * FROM tasks';
     let params = [];
 
     // If user role is not admin, only show their tasks
     if (userRole !== 'admin') {
-      query += ' WHERE user_id = ?';
+      queryText += ' WHERE user_id = $1';
       params.push(userId);
     }
 
-    query += ' ORDER BY created_at DESC';
+    queryText += ' ORDER BY created_at DESC';
     
-    const [tasks] = await pool.query(query, params);
+    const [tasks] = await query(queryText, params);
     
     logger.info(`Tasks retrieved by user ${userId} with role ${userRole}`);
     
@@ -69,16 +69,16 @@ exports.getTaskById = async (req, res) => {
     const userId = req.user.id;
     const userRole = req.user.role;
 
-    let query = 'SELECT * FROM tasks WHERE id = ?';
+    let queryText = 'SELECT * FROM tasks WHERE id = $1';
     let params = [taskId];
 
     // If user role is not admin, check if the task belongs to them
     if (userRole !== 'admin') {
-      query += ' AND user_id = ?';
+      queryText += ' AND user_id = $2';
       params.push(userId);
     }
 
-    const [tasks] = await pool.query(query, params);
+    const [tasks] = await query(queryText, params);
     
     if (tasks.length === 0) {
       return res.status(404).json({ message: 'Task not found or unauthorized' });
@@ -102,15 +102,15 @@ exports.updateTask = async (req, res) => {
     const { title, description, status } = req.body;
 
     // Check if task exists and belongs to user (if not admin)
-    let query = 'SELECT * FROM tasks WHERE id = ?';
+    let queryText = 'SELECT * FROM tasks WHERE id = $1';
     let params = [taskId];
 
     if (userRole !== 'admin') {
-      query += ' AND user_id = ?';
+      queryText += ' AND user_id = $2';
       params.push(userId);
     }
 
-    const [tasks] = await pool.query(query, params);
+    const [tasks] = await query(queryText, params);
     
     if (tasks.length === 0) {
       return res.status(404).json({ message: 'Task not found or unauthorized' });
@@ -119,19 +119,20 @@ exports.updateTask = async (req, res) => {
     // Build update query dynamically based on provided fields
     const updateFields = [];
     const updateParams = [];
+    let paramCount = 1;
 
     if (title) {
-      updateFields.push('title = ?');
+      updateFields.push(`title = $${paramCount++}`);
       updateParams.push(title);
     }
 
     if (description !== undefined) {
-      updateFields.push('description = ?');
+      updateFields.push(`description = $${paramCount++}`);
       updateParams.push(description);
     }
 
     if (status) {
-      updateFields.push('status = ?');
+      updateFields.push(`status = $${paramCount++}`);
       updateParams.push(status);
     }
 
@@ -141,17 +142,20 @@ exports.updateTask = async (req, res) => {
 
     // Complete update params array and execute query
     updateParams.push(taskId);
+    const idParamPos = paramCount++;
+    
+    let updateQuery = `
+      UPDATE tasks
+      SET ${updateFields.join(', ')}
+      WHERE id = $${idParamPos}
+    `;
+    
     if (userRole !== 'admin') {
+      updateQuery += ` AND user_id = $${paramCount}`;
       updateParams.push(userId);
     }
 
-    const updateQuery = `
-      UPDATE tasks
-      SET ${updateFields.join(', ')}
-      WHERE id = ?${userRole !== 'admin' ? ' AND user_id = ?' : ''}
-    `;
-
-    const [result] = await pool.query(updateQuery, updateParams);
+    const [result] = await query(updateQuery, updateParams);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Task not found or unauthorized' });
@@ -182,17 +186,17 @@ exports.deleteTask = async (req, res) => {
     const userId = req.user.id;
     const userRole = req.user.role;
 
-    let query = 'DELETE FROM tasks WHERE id = ?';
+    let queryText = 'DELETE FROM tasks WHERE id = $1';
     let params = [taskId];
 
     if (userRole !== 'admin') {
-      query += ' AND user_id = ?';
+      queryText += ' AND user_id = $2';
       params.push(userId);
     }
 
-    const [result] = await pool.query(query, params);
+    const [result] = await query(queryText, params);
     
-    if (result.affectedRows === 0) {
+    if (result.rowCount === 0) {
       return res.status(404).json({ message: 'Task not found or unauthorized' });
     }
 

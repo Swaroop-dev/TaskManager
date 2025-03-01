@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { pool } = require('../config/db');
+const { query } = require('../config/db');
 const logger = require('../config/logger');
 const {jwtsecret}=require('../config/config')
 
@@ -20,7 +20,7 @@ const auth = async (req, res, next) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     
     // Check if user exists
-    const [users] = await pool.query('SELECT id, role FROM users WHERE id = ?', [decoded.id]);
+    const [users] = await query('SELECT id, role FROM users WHERE id = $1', [decoded.id]);
     
     if (users.length === 0) {
       return res.status(401).json({ message: 'User no longer exists' });

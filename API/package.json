@@ -16,6 +16,8 @@
         "jsonwebtoken": "^9.0.0",
         "morgan": "^1.10.0",
         "mysql2": "^3.2.4",
+        "pg": "^8.13.3",
+        "postgres": "^3.4.5",
         "winston": "^3.8.2"
     },
     "devDependencies": {
