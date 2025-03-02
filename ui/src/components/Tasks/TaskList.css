@@ -1,0 +1,129 @@
+/* tasklist.css - Styling for the task list container */
+
+.task-list-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .task-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .task-list-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+  
+  .task-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .task-list-empty {
+    text-align: center;
+    padding: 30px 0;
+    color: #777;
+    font-style: italic;
+  }
+  
+  .task-filters {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+  }
+  
+  .filter-button {
+    padding: 8px 16px;
+    background-color: transparent;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+  
+  .filter-button.active {
+    background-color: #4a90e2;
+    color: white;
+    border-color: #4a90e2;
+  }
+  
+  .filter-button:hover:not(.active) {
+    background-color: #f1f1f1;
+  }
+  
+  .add-task-form {
+    display: flex;
+    margin-bottom: 20px;
+  }
+  
+  .add-task-input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+    font-size: 16px;
+  }
+  
+  .add-task-button {
+    padding: 10px 20px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .add-task-button:hover {
+    background-color: #3a80d2;
+  }
+  
+  .task-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+    color: #666;
+    font-size: 14px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    .task-list-container {
+      padding: 15px;
+    }
+    
+    .task-filters {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .add-task-form {
+      flex-direction: column;
+    }
+    
+    .add-task-input {
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    
+    .add-task-button {
+      border-radius: 4px;
+    }
+  }

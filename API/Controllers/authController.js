@@ -1,8 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { pool,query } = require('../config/db');
-const logger = require('../config/logger');
-const {jwtsecret}= require('../config/config');
+const { pool,query } = require('../config/db.js');
+const logger = require('../config/logger.js');
+const {jwtsecret}= require('../config/config.js');
 
 const JWT_SECRET = jwtsecret;
 

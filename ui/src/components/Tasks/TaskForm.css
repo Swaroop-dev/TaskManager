@@ -1,0 +1,42 @@
+/* components/Tasks/TaskForm.css */
+.task-form-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+  }
+  
+  .task-form-container h2 {
+    margin-bottom: 15px;
+    color: var(--primary-color);
+  }
+  
+  .task-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .submit-btn {
+    margin-top: 10px;
+    font-weight: 500;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 767px) {
+    .task-form-container {
+      padding: 15px;
+    }
+    
+    .task-form {
+      gap: 12px;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .task-form-container {
+      flex: 0 0 350px;
+      align-self: flex-start;
+    }
+  }
