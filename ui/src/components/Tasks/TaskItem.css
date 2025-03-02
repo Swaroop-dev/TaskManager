@@ -181,6 +181,7 @@
     border: 1px solid #4a90e2;
     color: white;
     margin-bottom: 10px;
+    margin-right: 10px;
   }
   
   .task-cancel-button {
@@ -188,3 +189,9 @@
     border: 1px solid #ddd;
     color: #666;
   }
+  .edit-buttons{
+    margin-top: 15px;
+}
+.edit-buttons>button{
+  margin-right: 10px;
+}

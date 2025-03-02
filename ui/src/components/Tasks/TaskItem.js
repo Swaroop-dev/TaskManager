@@ -95,8 +95,9 @@ function TaskItem({ task, updateTask, deleteTask }) {
             <label htmlFor={`status-${task.id}`}>Status</label>
            
             <select class="task-edit-select" name="status" onChange={handleChange}>
-              <option value="in progress">In Progress</option>
-              <option value="completed">Completed</option>
+              <option value="in progress" selected={task.status==="inprogress"}>In Progress</option>
+              <option value="completed" selected={task.status==="completed"}>Completed</option>
+              <option value="pending" selected={task.status==="pending"}>Pending</option>
             </select>
           </div>
           
