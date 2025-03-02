@@ -137,29 +137,7 @@ function TaskItem({ task, updateTask, deleteTask }) {
           
           
           <div className="task-actions">
-            <div className="status-buttons">
-              <button 
-                onClick={() => handleStatusChange('pending')}
-                className={task.status === 'pending' ? 'active' : ''}
-                disabled={isProcessing || task.status === 'pending'}
-              >
-                Pending
-              </button>
-              <button 
-                onClick={() => handleStatusChange('in progress')}
-                className={task.status === 'in progress' ? 'active' : ''}
-                disabled={isProcessing || task.status === 'in progress'}
-              >
-                In Progress
-              </button>
-              <button 
-                onClick={() => handleStatusChange('completed')}
-                className={task.status === 'completed' ? 'active' : ''}
-                disabled={isProcessing || task.status === 'completed'}
-              >
-                Completed
-              </button>
-            </div>
+            
             
             <div className="edit-delete-buttons">
               <button 
