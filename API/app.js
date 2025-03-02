@@ -7,8 +7,7 @@ const logger = require('./config/logger');
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const taskRoutes = require('./routes/taskRoutes');
-const dotenv = require('dotenv');
-dotenv.config();
+
 // Initialize app
 const app = express();
 
